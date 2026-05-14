@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 public class AggregatorService {
@@ -48,34 +46,61 @@ public class AggregatorService {
 
         final List<Entry> candidates = new ArrayList<>();
 
-        // Iterate from a to z
-        IntStream.range('a', '{')
-                .mapToObj(i -> Character.toString(i))
-                .forEach(c -> {
+        // Create an array of alphabetic characters from 'a' to 'z'
+        char[] alphabet = new char[26];
+        for (int i = 0; i < 26; i++) {
+            alphabet[i] = (char) ('a' + i);
+        }
 
-                    // get words starting and ending with character
-                    List<Entry> startsWith = restClient.getWordsStartingWith(c);
-                    List<Entry> endsWith = restClient.getWordsEndingWith(c);
+        // Iterate through each letter of the alphabet
+        for (char c : alphabet) {
+            String letter = String.valueOf(c);
 
-                    // keep entries that exist in both lists
-                    List<Entry> startsAndEndsWith = new ArrayList<>(startsWith);
-                    startsAndEndsWith.retainAll(endsWith);
+            // Get words starting and ending with the current letter
+            List<Entry> startsWith = restClient.getWordsStartingWith(letter);
+            List<Entry> endsWith = restClient.getWordsEndingWith(letter);
 
-                    // store list with existing entries
-                    candidates.addAll(startsAndEndsWith);
+            // Keep entries that exist in both lists
+            List<Entry> startsAndEndsWith = new ArrayList<>(startsWith);
+            startsAndEndsWith.retainAll(endsWith);
 
-                });
+            // Add matching entries to candidates list
+            candidates.addAll(startsAndEndsWith);
+        }
 
-        // test each entry for palindrome, sort and return
-        return candidates.stream()
-                .filter(entry -> {
-                    String word = entry.getWord();
-                    String reverse = new StringBuilder(word).reverse()
-                            .toString();
-                    return word.equals(reverse);
-                })
-                .sorted()
-                .collect(Collectors.toList());
+        // Filter palindromes using traditional loop and if-statement
+        List<Entry> palindromes = new ArrayList<>();
+        for (Entry entry : candidates) {
+            String word = entry.getWord();
+
+            // Reverse the word manually using a loop
+            String reverse = "";
+            for (int i = word.length() - 1; i >= 0; i--) {
+                reverse += word.charAt(i);
+            }
+
+            // Check if word equals its reverse
+            if (word.equals(reverse)) {
+                palindromes.add(entry);
+            }
+        }
+
+        // Sort the palindromes list using bubble sort
+        for (int i = 0; i < palindromes.size(); i++) {
+            for (int j = i + 1; j < palindromes.size(); j++) {
+                Entry entryI = palindromes.get(i);
+                Entry entryJ = palindromes.get(j);
+
+                if (entryI.compareTo(entryJ) > 0) {
+                    // Swap
+                    Entry temp = entryI;
+                    palindromes.set(i, entryJ);
+                    palindromes.set(j, temp);
+                }
+            }
+        }
+
+        return palindromes;
     }
 
 }

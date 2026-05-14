@@ -1,0 +1,4 @@
+$kind: http-request
+name: Get Words With Successive Letters Containing
+method: GET
+url: '{{aggregatorBaseUrl}}/getWordsThatContainSuccessiveLettersAndContains/{{chars}}'

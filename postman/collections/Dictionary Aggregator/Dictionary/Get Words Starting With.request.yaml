@@ -1,0 +1,4 @@
+$kind: http-request
+name: Get Words Starting With
+method: GET
+url: '{{dictionaryBaseUrl}}/getWordsStartingWith/{{value}}'

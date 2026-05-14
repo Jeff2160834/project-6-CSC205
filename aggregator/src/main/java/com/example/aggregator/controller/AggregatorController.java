@@ -36,7 +36,7 @@ public class AggregatorController {
         return aggregatorService.getDefinitionFor(word);
     }
 
-    @GetMapping("/getAllPalindromes/{word}")
+    @GetMapping("/getAllPalindromes")
     public List<Entry> getAllPalindromes() {
         return aggregatorService.getAllPalindromes();
     }
